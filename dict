@@ -7,7 +7,7 @@ require 'pry'
 
 term = ARGV.first
 unless term
-  puts 'Usage: dicc TERM'
+  puts 'Usage: dict TERM'
   exit 1
 end
 
@@ -18,7 +18,10 @@ def find_translations_for(doc, translation)
   index = 1
 
   loop do
-    hits_in_row = doc.css("#tr#{index} a[href^='/#{translation}']").map { |el| el.text.strip }
+    hits_in_row = doc.css("#tr#{index} a[href^='/#{translation}']").map do |el|
+      el.parent.css('a').map { |a| a.text.strip }.join(' ')
+    end
+
     if hits_in_row.count > 0
       index += 1
       hits += hits_in_row
@@ -27,7 +30,7 @@ def find_translations_for(doc, translation)
     end
   end
 
-  hits.uniq.each do |hit|
+  hits.compact.uniq.each do |hit|
     puts "\t#{hit}"
   end
 
