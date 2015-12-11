@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'cgi'
+require 'nokogiri'
+require 'open-uri'
+require 'pry'
+
+term = ARGV.first
+unless term
+  puts 'Usage: dicc TERM'
+  exit 1
+end
+
+def find_translations_for(doc, translation)
+  puts "\n### #{translation}\n"
+
+  hits  = []
+  index = 1
+
+  loop do
+    hits_in_row = doc.css("#tr#{index} a[href^='/#{translation}']").map { |el| el.text.strip }
+    if hits_in_row.count > 0
+      index += 1
+      hits += hits_in_row
+    else
+      break
+    end
+  end
+
+  hits.uniq.each do |hit|
+    puts "\t#{hit}"
+  end
+
+  puts
+end
+
+query = CGI.escape(term)
+doc = Nokogiri::HTML(open("http://www.dict.cc/?s=#{query}"))
+
+find_translations_for(doc, 'englisch-deutsch')
+find_translations_for(doc, 'deutsch-englisch')
