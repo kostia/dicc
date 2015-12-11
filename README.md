@@ -1,3 +1,3 @@
-# dicc
+# dict
 
-Tiny command line helper for translation using http://dicc.cc.
+Tiny command line helper for translation using http://dict.cc.
